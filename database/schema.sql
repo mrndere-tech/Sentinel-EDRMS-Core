@@ -3,8 +3,9 @@ CREATE TABLE Users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
-    role VARCHAR(20) NOT NULL,
+    role_id INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (role_id) REFERENCES Roles(role_id) 
 );
 CREATE TABLE Documents (
     document_id SERIAL PRIMARY KEY,
@@ -25,4 +26,17 @@ CREATE TABLE AuditLogs (
 
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (document_id) REFERENCES Documents(document_id)
+);
+CREATE TABLE Roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL UNIQUE
+);
+CREATE TABLE DocumentPermissions (
+    permission_id SERIAL PRIMARY KEY,
+    document_id INTEGER,
+    user_id INTEGER,
+    permission_type VARCHAR(20),
+
+    FOREIGN KEY (document_id) REFERENCES Documents(document_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
