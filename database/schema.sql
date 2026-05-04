@@ -16,3 +16,13 @@ CREATE TABLE Documents (
 
     FOREIGN KEY (uploaded_by) REFERENCES Users(user_id)
 );
+CREATE TABLE AuditLogs (
+    log_id SERIAL PRIMARY KEY,
+    user_id INTEGER,
+    action VARCHAR(100) NOT NULL,
+    document_id INTEGER,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (document_id) REFERENCES Documents(document_id)
+);
