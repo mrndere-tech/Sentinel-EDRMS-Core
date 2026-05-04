@@ -16,6 +16,6 @@ def login(username, password):
     for user in users:
         if user["username"] == username and user["password"] == password:
             print(f"Welcome {username}")
-            return True
+            return user   # IMPORTANT CHANGE
     print("Invalid credentials")
-    return False
+    return None
