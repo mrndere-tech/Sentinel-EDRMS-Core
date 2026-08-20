@@ -1,69 +1,24 @@
 import sqlite3
-from sqlite3 import Error
+from pathlib import Path
 
-DATABASE_PATH = "../database/sentinel_edrms.db"
+# Project root directory
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Central database location
+DATABASE_DIR = BASE_DIR / "database"
+DATABASE_DIR.mkdir(exist_ok=True)
+
+DATABASE_PATH = DATABASE_DIR / "sentinel_edrms.db"
 
 
-def connect_db():
-    """
-    Creates a connection to the SQLite database
-    """
-    connection = None
+def get_connection():
+    """Create and return a connection to the Sentinel EDRMS database."""
+    connection = sqlite3.connect(DATABASE_PATH)
 
-    try:
-        connection = sqlite3.connect(DATABASE_PATH)
-        print("Database connection successful")
+    # Return rows that can be accessed by column name
+    connection.row_factory = sqlite3.Row
 
-    except Error as e:
-        print(f"Database connection failed: {e}")
+    # Enforce foreign-key relationships
+    connection.execute("PRAGMA foreign_keys = ON")
 
     return connection
-
-
-def execute_query(query, parameters=()):
-    """
-    Executes INSERT, UPDATE, DELETE queries
-    """
-
-    connection = connect_db()
-
-    if connection is None:
-        return
-
-    cursor = connection.cursor()
-
-    try:
-        cursor.execute(query, parameters)
-        connection.commit()
-        print("Query executed successfully")
-
-    except Error as e:
-        print(f"Query failed: {e}")
-
-    finally:
-        connection.close()
-
-
-def fetch_query(query, parameters=()):
-    """
-    Executes SELECT queries
-    """
-
-    connection = connect_db()
-
-    if connection is None:
-        return []
-
-    cursor = connection.cursor()
-
-    try:
-        cursor.execute(query, parameters)
-        results = cursor.fetchall()
-        return results
-
-    except Error as e:
-        print(f"Fetch failed: {e}")
-        return []
-
-    finally:
-        connection.close()
