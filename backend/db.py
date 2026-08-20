@@ -1,11 +1,26 @@
-import sqlite3
-import os
+from .db_connection import get_connection
 
-# Get absolute path to database file (avoids path errors)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "../database/edrms.db")
 
-def get_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row  # allows dict-like access
-    return conn
+def execute_query(query, parameters=()):
+    """Execute a query and return the resulting rows."""
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute(query, parameters)
+        rows = cursor.fetchall()
+        connection.commit()
+        return rows
+    finally:
+        connection.close()
+
+
+def execute_command(query, parameters=()):
+    """Execute an INSERT, UPDATE, or DELETE command."""
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute(query, parameters)
+        connection.commit()
+        return cursor.lastrowid
+    finally:
+        connection.close()
